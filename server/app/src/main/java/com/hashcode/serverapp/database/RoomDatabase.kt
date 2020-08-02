@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.hashcode.serverapp.database.entities.Message
 import com.hashcode.serverapp.database.entities.User
 
-@Database(entities = [User::class, Message::class], version = 2)
+@Database(entities = [User::class, Message::class], version = 3)
 abstract class MessagingDatabase : RoomDatabase() {
     abstract fun getDao(): MessagingDao
 }

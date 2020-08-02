@@ -27,7 +27,6 @@ class MessageHistoryHandler(private var context: Context) : HttpRequestHandler {
                         val response = JSONObject()
                         response.put("success", true)
                         response.put("messages", messagesJson)
-
                         sendResponse(exchange, response.toString())
                     }
                 }

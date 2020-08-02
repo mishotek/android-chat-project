@@ -21,14 +21,4 @@ interface HttpRequestHandler {
         val s = Scanner(inputStream).useDelimiter("\\A")
         return if (s.hasNext()) s.next() else ""
     }
-
-    fun toArrayString(items: List<JSONObject>): String {
-        if (items.isEmpty()) {
-            return "[]"
-        }
-
-        return "[" + items
-            .map { json -> json.toString() }
-            .reduce { res, item -> "$res, $item" } + "]"
-    }
 }

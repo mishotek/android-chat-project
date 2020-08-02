@@ -1,7 +1,8 @@
 package com.hashcode.serverapp.handlers
 
 import android.content.Context
-import com.hashcode.serverapp.services.MessagingService
+import com.hashcode.serverapp.models.ExtendedUser
+import com.hashcode.serverapp.services.UserListService
 import com.sun.net.httpserver.HttpHandler
 import org.json.JSONObject
 
@@ -11,28 +12,21 @@ class UserListHandler(private var context: Context) : HttpRequestHandler {
             run {
                 // Get request method
                 when (exchange!!.requestMethod) {
-                    "POST" -> {
-//                        val userListService = UserListService(context)
-//                        val inputStream = exchange.requestBody
-//                        val requestBody = streamToString(inputStream)
-//                        val jsonBody = JSONObject(requestBody)
-//
-//                        val senderId = (jsonBody["senderId"] as Int).toLong()
-//                        val recipientId: Long = (jsonBody["recipientId"] as Int).toLong()
-//                        val message: String = jsonBody["message"] as String
-//                        val time: Long = System.currentTimeMillis()
-//
-//                        val messageId = messagingService.saveMessage(senderId, recipientId, message, time)
-//
-//                        val response = JSONObject()
-//                        response.put("success", true)
-//                        response.put("senderId", senderId)
-//                        response.put("recipientId", recipientId)
-//                        response.put("message", message)
-//                        response.put("time", time)
-//                        response.put("messageId", messageId)
-//
-//                        sendResponse(exchange, response.toString())
+                    "GET" -> {
+                        val userListService = UserListService(context)
+                        val inputStream = exchange.requestBody
+                        val requestBody = streamToString(inputStream)
+                        val jsonBody = JSONObject(requestBody)
+
+                        val userId = (jsonBody["userId"] as Int).toLong()
+
+                        val users: List<ExtendedUser> = userListService.getUsers(userId)
+                        val usersJson: List<JSONObject> = users.map { user -> userListService.extendedUserToJson(user) }
+
+                        val response = JSONObject()
+                        response.put("success", true)
+                        response.put("users", usersJson)
+                        sendResponse(exchange, response.toString())
                     }
                 }
             }

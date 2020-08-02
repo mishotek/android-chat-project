@@ -15,6 +15,9 @@ interface MessagingDao {
     @Query("select * from user_table")
     fun getAllUsers(): List<User>
 
+    @Query("select * from user_table where id != :userIdToExclude")
+    fun getAllUsersBut(userIdToExclude: Long): List<User>
+
     @Insert
     fun insertMessage(message: Message): Long
 
