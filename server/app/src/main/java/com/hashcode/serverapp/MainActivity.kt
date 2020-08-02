@@ -1,8 +1,8 @@
 package com.hashcode.serverapp
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
+import androidx.appcompat.app.AppCompatActivity
 import com.hashcode.serverapp.handlers.AuthHandler
 import com.hashcode.serverapp.handlers.MessageHandler
 import com.hashcode.serverapp.handlers.MessageHistoryHandler
@@ -27,7 +27,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
         val port = 5000
 
         serverButton.setOnClickListener {
