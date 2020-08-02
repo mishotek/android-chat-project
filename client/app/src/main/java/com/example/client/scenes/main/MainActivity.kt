@@ -28,9 +28,12 @@ class MainActivity : AppCompatActivity(), MainSceneContract.View {
 
         progressIndicator = findViewById(R.id.progressBar)
         titleLabel = findViewById(R.id.serverStatusLabel)
-
         presenter = MainScenePresenterImpl(this)
-        presenter.onCreate()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenter.checkServerStatus()
     }
 
     override fun startAuthActivity() {
