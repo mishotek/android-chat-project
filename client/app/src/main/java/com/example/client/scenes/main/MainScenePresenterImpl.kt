@@ -15,11 +15,7 @@ class MainScenePresenterImpl(var view: MainSceneContract.View): MainSceneContrac
         ApiInterface.initGateway()
     }
 
-    override fun onCreate() {
-        handleServerStatus()
-    }
-
-    private fun handleServerStatus() {
+    override fun checkServerStatus() {
         val call = gateway.getServerStatus()
         call.enqueue(object: Callback<ServerStatus> {
 
@@ -29,15 +25,10 @@ class MainScenePresenterImpl(var view: MainSceneContract.View): MainSceneContrac
             }
 
             override fun onResponse(call: Call<ServerStatus>, response: Response<ServerStatus>) {
-                Log.d("dbg", "success")
-                if (response.code() == 200) {
-                    val serverStatus = response.body()
-                    if (serverStatus != null && serverStatus.success) {
-                        view.startAuthActivity()
-                    } else {
-                        view.stopProgressIndicator()
-                        view.setMessage("Server is down!")
-                    }
+                val serverStatus = response.body()
+                val shouldProceed = response.code() == 200 && serverStatus != null && serverStatus.success
+                if (shouldProceed) {
+                    view.startAuthActivity()
                 } else {
                     view.stopProgressIndicator()
                     view.setMessage("Server is down!")

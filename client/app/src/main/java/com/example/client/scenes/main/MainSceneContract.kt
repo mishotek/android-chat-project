@@ -9,7 +9,7 @@ interface MainSceneContract {
     }
 
     interface Presenter {
-        fun onCreate()
+        fun checkServerStatus()
     }
 
 }
