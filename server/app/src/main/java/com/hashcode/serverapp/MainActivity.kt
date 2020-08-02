@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
 
             // Routes
             mHttpServer!!.createContext("/ping", PingHandler().getHandler())
-            mHttpServer!!.createContext("/auth", AuthHandler().getHandler())
+            mHttpServer!!.createContext("/auth", AuthHandler(this).getHandler())
 
 
             mHttpServer!!.start()//startServer server;
