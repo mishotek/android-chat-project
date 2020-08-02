@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import com.hashcode.serverapp.handlers.AuthHandler
+import com.hashcode.serverapp.handlers.MessageHandler
+import com.hashcode.serverapp.handlers.MessageHistoryHandler
 import com.hashcode.serverapp.handlers.PingHandler
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
@@ -66,11 +68,12 @@ class MainActivity : AppCompatActivity() {
 
             mHttpServer!!.createContext("/", rootHandler)
             mHttpServer!!.createContext("/index", rootHandler)
-            mHttpServer!!.createContext("/messages", messageHandler)
 
             // Routes
             mHttpServer!!.createContext("/ping", PingHandler().getHandler())
             mHttpServer!!.createContext("/auth", AuthHandler(this).getHandler())
+            mHttpServer!!.createContext("/send-message", MessageHandler(this).getHandler())
+            mHttpServer!!.createContext("/messages", MessageHistoryHandler(this).getHandler())
 
 
             mHttpServer!!.start()//startServer server;

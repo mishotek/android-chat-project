@@ -2,6 +2,7 @@ package com.hashcode.serverapp.handlers
 
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
+import org.json.JSONObject
 import java.io.InputStream
 import java.util.*
 
@@ -19,5 +20,15 @@ interface HttpRequestHandler {
     fun streamToString(inputStream: InputStream): String {
         val s = Scanner(inputStream).useDelimiter("\\A")
         return if (s.hasNext()) s.next() else ""
+    }
+
+    fun toArrayString(items: List<JSONObject>): String {
+        if (items.isEmpty()) {
+            return "[]"
+        }
+
+        return "[" + items
+            .map { json -> json.toString() }
+            .reduce { res, item -> "$res, $item" } + "]"
     }
 }

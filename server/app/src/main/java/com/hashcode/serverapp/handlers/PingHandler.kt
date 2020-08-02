@@ -1,6 +1,7 @@
 package com.hashcode.serverapp.handlers
 
 import com.sun.net.httpserver.HttpHandler
+import org.json.JSONObject
 
 class PingHandler : HttpRequestHandler {
     override fun getHandler(): HttpHandler {
@@ -9,7 +10,11 @@ class PingHandler : HttpRequestHandler {
                 // Get request method
                 when (exchange!!.requestMethod) {
                     "GET" -> {
-                        sendResponse(exchange, "Server is up and running")
+                        val response = JSONObject()
+                        response.put("success", true)
+                        response.put("data", "Server is up and running")
+
+                        sendResponse(exchange, response.toString())
                     }
                 }
             }
