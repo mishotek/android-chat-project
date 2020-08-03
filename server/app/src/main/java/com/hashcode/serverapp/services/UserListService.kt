@@ -12,7 +12,11 @@ class UserListService(private val context: Context) {
     private val database = DatabaseManager.getDatabase(context).getDao()
 
     fun getUsers(userId: Long): List<ExtendedUser> {
-        return database.getAllUsersBut(userId).map { user -> ExtendedUser(user = user, lastMessage = getLastMessage(userId, user.id)) }
+        val blockedUserIds: List<Long> = database.getBlockedUsers(userId).map { blockedUser -> blockedUser.blockedId }
+
+        return database.getAllUsersBut(userId)
+            .map { user -> ExtendedUser(user = user, lastMessage = getLastMessage(userId, user.id)) }
+            .filter { user -> !blockedUserIds.any { blockedId -> blockedId == user.user.id } }
     }
 
     fun extendedUserToJson(extendedUser: ExtendedUser): JSONObject {

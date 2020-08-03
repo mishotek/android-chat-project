@@ -7,6 +7,6 @@ import androidx.room.PrimaryKey
 data class BlockedUsers (
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val userId: Long,
-    val blocked: ArrayList<Long>
+    val blockerId: Long,
+    val blockedId: Long
 )

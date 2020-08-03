@@ -60,6 +60,7 @@ class MainService() : Service() {
             mHttpServer!!.createContext("/send-message", MessageHandler(this).getHandler())
             mHttpServer!!.createContext("/messages", MessageHistoryHandler(this).getHandler())
             mHttpServer!!.createContext("/user-list", UserListHandler(this).getHandler())
+            mHttpServer!!.createContext("/block-user", BlockUserHandler(this).getHandler())
 
             mHttpServer!!.start()//startServer server;
         } catch (e: IOException) {
