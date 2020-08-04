@@ -1,10 +1,12 @@
 package com.example.client.scenes.chat_history
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.client.R
+import com.example.client.scenes.chat.ChatActivity
 import com.example.client.scenes.chat_history.adapters.ChatHistoryListAdapter
 
 class ChatHistoryActivity: AppCompatActivity(), ChatHistorySceneContract.View {
@@ -29,6 +31,13 @@ class ChatHistoryActivity: AppCompatActivity(), ChatHistorySceneContract.View {
             adapter.chatItems = items
             chatHistoryList?.adapter = adapter
         }
+    }
+
+    override fun startChatActivity(userId: Long, recipientId: Long) {
+        val intent = Intent(this, ChatActivity::class.java)
+        intent.putExtra("userId", userId)
+        intent.putExtra("recipientId", recipientId)
+        startActivity(intent)
     }
 
 }

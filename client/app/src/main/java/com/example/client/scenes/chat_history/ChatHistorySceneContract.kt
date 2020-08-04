@@ -6,7 +6,7 @@ import com.example.client.scenes.chat_history.models.ChatItemModel
 interface ChatHistorySceneContract {
 
     interface View {
-
+        fun startChatActivity(userId: Long, recipientId: Long)
     }
 
     interface Presenter {

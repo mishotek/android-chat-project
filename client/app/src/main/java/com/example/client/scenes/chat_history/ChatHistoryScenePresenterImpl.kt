@@ -35,7 +35,7 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
     }
 
     override fun didTapChatItem(recipientId: Long) {
-        Log.d("dbg", recipientId.toString())
+        view.startChatActivity(currentUserId, recipientId)
     }
 
 
