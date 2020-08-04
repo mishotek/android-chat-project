@@ -4,7 +4,7 @@ interface AuthSceneContract {
 
     interface View {
         fun showToastMessage(message: String)
-        fun startChatHistoryActivity()
+        fun startChatHistoryActivity(id: Long)
     }
 
     interface Presenter {
