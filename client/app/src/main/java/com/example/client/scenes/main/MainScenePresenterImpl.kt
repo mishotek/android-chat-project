@@ -22,11 +22,16 @@ class MainScenePresenterImpl(var view: MainSceneContract.View): MainSceneContrac
             override fun onFailure(call: Call<ServerStatus>, t: Throwable) {
                 view.stopProgressIndicator()
                 view.setMessage("Server is down!")
+
+                Log.i("test", "onFailure")
             }
 
             override fun onResponse(call: Call<ServerStatus>, response: Response<ServerStatus>) {
                 val serverStatus = response.body()
                 val shouldProceed = response.code() == 200 && serverStatus != null && serverStatus.success
+
+                Log.i("test", "onResponse")
+
                 if (shouldProceed) {
                     view.startAuthActivity()
                 } else {
