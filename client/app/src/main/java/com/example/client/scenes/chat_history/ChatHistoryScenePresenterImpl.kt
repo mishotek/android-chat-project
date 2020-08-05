@@ -1,5 +1,7 @@
 package com.example.client.scenes.chat_history
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.example.client.entities.ActiveUsers
 import com.example.client.entities.ActiveUsersRequest
@@ -18,7 +20,10 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
         ApiInterface.initGateway()
     }
 
+    lateinit var mainHandler: Handler
+
     private var currentUserId: Long = -1
+    private var adapter: ChatHistoryListAdapter? = null
 
     override fun getChatHistoryDataSource(userId: Long, completion: (List<ChatItemModel>) -> Unit) {
         currentUserId = userId
@@ -27,25 +32,42 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
         }
     }
 
+    override fun setAdapter(adapter: ChatHistoryListAdapter) {
+        this.adapter = adapter
+    }
+
+    override fun onCreate() {
+        mainHandler = Handler(Looper.getMainLooper())
+    }
+
+    override fun onPause() {
+        mainHandler.removeCallbacks(fetchActiveUsersTask)
+    }
+
+    override fun onResume() {
+        mainHandler.post(fetchActiveUsersTask)
+    }
+
     private fun fetchChatHistory(userId: Long, completion: (List<ChatItemModel>) -> Unit) {
         val call = gateway.getAllActiveUsers(ActiveUsersRequest(userId))
         call.enqueue(object: Callback<ActiveUsers> {
 
             override fun onFailure(call: Call<ActiveUsers>, t: Throwable) {
-                Log.d("dbg", "FAILURE: couldn't fetch active users")
+                view.showToastMessage("Active users couldn't be loaded")
             }
 
             override fun onResponse(call: Call<ActiveUsers>, response: Response<ActiveUsers>) {
                 val activeUsers = response.body()
                 val shouldProceed = response.code() == 200 && activeUsers != null && activeUsers.success
                 if (shouldProceed) {
+                    view.setNoHistoryLabelVisible(activeUsers!!.users.isEmpty())
+
                     val items = activeUsers!!.users.map { it ->
-                        it.user.id
                         ChatItemModel(it.user.id.toLong(), it.user.nickname, it.lastMessage?.message ?: "", this@ChatHistoryScenePresenterImpl)
                     }
                     completion(items)
                 } else {
-                    Log.d("dbg", "Couldn't fetch active users")
+                    view.showToastMessage("Active users couldn't be loaded")
                 }
             }
         })
@@ -55,5 +77,15 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
         view.startChatActivity(currentUserId, recipientId)
     }
 
+    private val fetchActiveUsersTask = object : Runnable {
+        override fun run() {
+            Log.d("dbg", "Active users fetched")
+            fetchChatHistory(currentUserId) { items ->
+                adapter?.chatItems = items
+                adapter?.notifyDataSetChanged()
+            }
+            mainHandler.postDelayed(this, 5000)
+        }
+    }
 
 }
