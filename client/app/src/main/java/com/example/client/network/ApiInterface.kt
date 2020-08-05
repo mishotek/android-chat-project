@@ -19,6 +19,9 @@ interface ApiInterface {
     @POST("user-list")
     fun getAllActiveUsers(@Body currentUserId: ActiveUsersRequest): Call<ActiveUsers>
 
+    @POST("messages")
+    fun getMessages(@Body messageInfo: MessagesRequest): Call<MessagesResponse>
+
     companion object {
         fun initGateway() : ApiInterface {
             val retrofit = Retrofit.Builder()
