@@ -7,10 +7,16 @@ interface ChatHistorySceneContract {
 
     interface View {
         fun startChatActivity(userId: Long, recipientId: Long)
+        fun showToastMessage(message: String)
+        fun setNoHistoryLabelVisible(value: Boolean)
     }
 
     interface Presenter {
         fun getChatHistoryDataSource(userId: Long, completion: (List<ChatItemModel>) -> Unit)
+        fun setAdapter(adapter: ChatHistoryListAdapter)
+        fun onCreate()
+        fun onPause()
+        fun onResume()
     }
 
 }
