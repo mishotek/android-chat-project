@@ -29,11 +29,14 @@ class ChatViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             timeLeftView.text = ""
             timeRightView.text = getDate(message.time)
             timeRightView.setPadding(24,0,0,0)
+            timeLeftView.setPadding(0,0,0,0)
+            messageTextView.setTextColor(itemView.context.resources.getColor(R.color.dark))
         } else {
             bubbleWrapperView.gravity = Gravity.RIGHT
             bubbleView.setBackgroundResource(R.drawable.bubble_sent)
             timeLeftView.text = getDate(message.time)
             timeRightView.text = ""
+            timeRightView.setPadding(0,0,0,0)
             timeLeftView.setPadding(0,0,24,0)
             messageTextView.setTextColor(itemView.context.resources.getColor(R.color.white))
         }

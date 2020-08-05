@@ -1,7 +1,11 @@
 package com.example.client.scenes.chat
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +19,8 @@ class ChatActivity: AppCompatActivity(), ChatSceneContract.View {
     lateinit var presenter: ChatSceneContract.Presenter
     lateinit var timer: Timer
 
+    var newMessageText = ""
+
     private var adapter: ChatRecyclerViewAdapter? = null
     private lateinit var recyclerView: RecyclerView
 
@@ -22,16 +28,9 @@ class ChatActivity: AppCompatActivity(), ChatSceneContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        senderId = intent.getLongExtra("userId", -1)
-        recipientId = intent.getLongExtra("recipientId", -1)
-
-        presenter = ChatScenePresenterImpl(this)
-
-        recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = ChatRecyclerViewAdapter()
-        recyclerView.adapter = adapter
-
+        setUpList()
+        listenToTyping()
+        listenToSend()
         updateMessages()
     }
 
@@ -44,6 +43,18 @@ class ChatActivity: AppCompatActivity(), ChatSceneContract.View {
         adapter?.setData(messages, senderId)
     }
 
+    private fun setUpList() {
+        senderId = intent.getLongExtra("userId", -1)
+        recipientId = intent.getLongExtra("recipientId", -1)
+
+        presenter = ChatScenePresenterImpl(this)
+
+        recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = ChatRecyclerViewAdapter()
+        recyclerView.adapter = adapter
+    }
+
     private fun updateMessages() {
         timer = Timer()
         timer.scheduleAtFixedRate(object : TimerTask() {
@@ -51,5 +62,33 @@ class ChatActivity: AppCompatActivity(), ChatSceneContract.View {
                 presenter.getMessages()
             }
         }, 0, 3000)
+    }
+
+    private fun listenToTyping() {
+        findViewById<EditText>(R.id.messageInput).addTextChangedListener(object : TextWatcher {
+
+            override fun afterTextChanged(s: Editable) {
+                newMessageText = s.toString()
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int,
+                                           count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int,
+                                       before: Int, count: Int) {
+            }
+        })
+    }
+
+    private fun listenToSend() {
+        findViewById<LinearLayout>(R.id.sendButton).setOnClickListener { event -> onSend() }
+    }
+
+    private fun onSend() {
+        presenter.sendMessage(newMessageText)
+        findViewById<EditText>(R.id.messageInput).setText("")
+        newMessageText = ""
+        presenter.getMessages()
     }
 }

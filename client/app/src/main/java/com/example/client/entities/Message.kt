@@ -17,3 +17,14 @@ data class MessagesResponse(
     val success: Boolean,
     val messages: List<Message>
 )
+
+data class SendMessageRequest(
+    val senderId: Long,
+    val recipientId: Long,
+    val message: String
+)
+
+data class SendMessageResponse(
+    val success: Boolean,
+    val message: Message
+)
