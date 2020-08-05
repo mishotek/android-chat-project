@@ -28,7 +28,7 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
     }
 
     private fun fetchChatHistory(userId: Long, completion: (List<ChatItemModel>) -> Unit) {
-        val call = gateway.getAllActiveUsers(ActiveUsersRequest(currentUserId))
+        val call = gateway.getAllActiveUsers(ActiveUsersRequest(userId))
         call.enqueue(object: Callback<ActiveUsers> {
 
             override fun onFailure(call: Call<ActiveUsers>, t: Throwable) {
@@ -40,7 +40,8 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
                 val shouldProceed = response.code() == 200 && activeUsers != null && activeUsers.success
                 if (shouldProceed) {
                     val items = activeUsers!!.users.map { it ->
-                        ChatItemModel(it.id, it.nickname, it.lastMessage ?: "", this@ChatHistoryScenePresenterImpl)
+                        it.user.id
+                        ChatItemModel(it.user.id.toLong(), it.user.nickname, it.lastMessage?.message ?: "", this@ChatHistoryScenePresenterImpl)
                     }
                     completion(items)
                 } else {
