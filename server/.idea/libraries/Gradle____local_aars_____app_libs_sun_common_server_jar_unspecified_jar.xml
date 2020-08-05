@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="Gradle: ./app/libs/sun-common-server.jar">
+  <library name="Gradle: __local_aars__:./app/libs/sun-common-server.jar:unspecified@jar">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/app/libs/sun-common-server.jar!/" />
     </CLASSES>
