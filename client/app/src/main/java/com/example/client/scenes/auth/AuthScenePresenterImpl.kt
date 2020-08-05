@@ -37,8 +37,7 @@ class AuthScenePresenterImpl(val view: AuthSceneContract.View): AuthSceneContrac
                 val authResponse = response.body()
                 val shouldProceed = response.code() == 200 && authResponse != null && authResponse.success
                 if (shouldProceed) {
-                    // TODO: Pass necessary data
-                    view.startChatHistoryActivity()
+                    view.startChatHistoryActivity(authResponse!!.id)
                 } else {
                     // Some different kind of feedback is possible here
                     view.showToastMessage("Something went wrong!")

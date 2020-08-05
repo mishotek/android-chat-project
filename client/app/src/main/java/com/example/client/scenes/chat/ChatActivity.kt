@@ -12,7 +12,7 @@ class ChatActivity: AppCompatActivity(), ChatSceneContract.View {
     override var recipientId: Long = 2
     lateinit var presenter: ChatSceneContract.Presenter
 
-    private lateinit var adapter: ChatRecyclerViewAdapter
+    private var adapter: ChatRecyclerViewAdapter? = null
     private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +29,6 @@ class ChatActivity: AppCompatActivity(), ChatSceneContract.View {
     }
 
     override fun showMessages(messages: List<Message>) {
-        adapter.setData(messages, senderId)
+        adapter?.setData(messages, senderId)
     }
 }

@@ -89,8 +89,9 @@ class AuthActivity: AppCompatActivity(), AuthSceneContract.View {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    override fun startChatHistoryActivity() {
+    override fun startChatHistoryActivity(id: Long) {
         val intent = Intent(this, ChatHistoryActivity::class.java)
+        intent.putExtra("userId", id)
         startActivity(intent)
     }
 }
