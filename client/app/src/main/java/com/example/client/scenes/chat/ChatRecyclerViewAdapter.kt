@@ -1,5 +1,6 @@
 package com.example.client.scenes.chat
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +31,8 @@ class ChatRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         messages.clear()
         messages.addAll(newMessages)
         userId = newUserId
+
+        Log.i("myLog", "set data " + messages.toString())
 
         notifyDataSetChanged()
     }

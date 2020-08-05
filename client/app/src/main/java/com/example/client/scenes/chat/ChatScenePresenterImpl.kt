@@ -1,5 +1,6 @@
 package com.example.client.scenes.chat
 
+import android.util.Log
 import com.example.client.entities.Message
 
 class ChatScenePresenterImpl(val view: ChatSceneContract.View): ChatSceneContract.Presenter {
@@ -7,9 +8,9 @@ class ChatScenePresenterImpl(val view: ChatSceneContract.View): ChatSceneContrac
     private val messages: ArrayList<Message> = ArrayList()
 
     init {
-        messages.add(Message(id = 1, senderId = 1, recipientId = 2, message = "Privet", time = 1))
-        messages.add(Message(id = 2, senderId = 2, recipientId = 1, message = "Zdarova", time = 2))
-        messages.add(Message(id = 3, senderId = 1, recipientId = 2, message = "Kak jizn maladaia?", time = 3))
+        messages.add(Message(id = 1, senderId = 1, recipientId = 2, message = "Privet", time = 1596642725319))
+        messages.add(Message(id = 2, senderId = 2, recipientId = 1, message = "Zdarova", time = 1596642725319))
+        messages.add(Message(id = 3, senderId = 1, recipientId = 2, message = "Kak jizn maladaia?", time = 1596642725319))
     }
 
     override fun sendMessage(message: String) {
