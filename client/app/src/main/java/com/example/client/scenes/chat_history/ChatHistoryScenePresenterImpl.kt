@@ -1,10 +1,15 @@
 package com.example.client.scenes.chat_history
 
 import android.util.Log
+import com.example.client.entities.ActiveUsers
+import com.example.client.entities.ActiveUsersRequest
 import com.example.client.network.ApiInterface
 import com.example.client.scenes.chat_history.adapters.ChatHistoryListAdapter
 import com.example.client.scenes.chat_history.models.ChatItemModel
 import com.example.client.scenes.chat_history.view_holders.ChatHistoryListItemViewHolderDelegate
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): ChatHistorySceneContract.Presenter, ChatHistoryListItemViewHolderDelegate {
 
@@ -23,15 +28,26 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
     }
 
     private fun fetchChatHistory(userId: Long, completion: (List<ChatItemModel>) -> Unit) {
-        // TODO: Make service call and fetch real data here
-        val items = listOf(
-            ChatItemModel(1, "Joni", "Hello there", this),
-            ChatItemModel(2, "Bondo", "Hey", this),
-            ChatItemModel(3, "Jondo", "Hello darkness my old friend", this),
-            ChatItemModel(4, "Tamazi", "CYKA BLYAT!", this),
-            ChatItemModel(5, "Arkadi", "ლოთს ღვინო, მწერალს კალამი, ლამაზ გოგონას ჩემგან სალამი!", this)
-        )
-        completion(items)
+        val call = gateway.getAllActiveUsers(ActiveUsersRequest(currentUserId))
+        call.enqueue(object: Callback<ActiveUsers> {
+
+            override fun onFailure(call: Call<ActiveUsers>, t: Throwable) {
+                Log.d("dbg", "FAILURE: couldn't fetch active users")
+            }
+
+            override fun onResponse(call: Call<ActiveUsers>, response: Response<ActiveUsers>) {
+                val activeUsers = response.body()
+                val shouldProceed = response.code() == 200 && activeUsers != null && activeUsers.success
+                if (shouldProceed) {
+                    val items = activeUsers!!.users.map { it ->
+                        ChatItemModel(it.id, it.nickname, it.lastMessage ?: "", this@ChatHistoryScenePresenterImpl)
+                    }
+                    completion(items)
+                } else {
+                    Log.d("dbg", "Couldn't fetch active users")
+                }
+            }
+        })
     }
 
     override fun didTapChatItem(recipientId: Long) {

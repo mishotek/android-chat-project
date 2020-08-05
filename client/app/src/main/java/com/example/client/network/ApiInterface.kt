@@ -1,8 +1,6 @@
 package com.example.client.network
 
-import com.example.client.entities.AuthParametersRequest
-import com.example.client.entities.AuthParametersResponse
-import com.example.client.entities.ServerStatus
+import com.example.client.entities.*
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -17,6 +15,9 @@ interface ApiInterface {
 
     @POST("auth")
     fun startChatSession(@Body authParams: AuthParametersRequest): Call<AuthParametersResponse>
+
+    @POST("user-list")
+    fun getAllActiveUsers(@Body currentUserId: ActiveUsersRequest): Call<ActiveUsers>
 
     companion object {
         fun initGateway() : ApiInterface {
