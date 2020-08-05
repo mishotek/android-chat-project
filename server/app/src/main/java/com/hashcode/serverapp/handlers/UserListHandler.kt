@@ -4,6 +4,7 @@ import android.content.Context
 import com.hashcode.serverapp.models.ExtendedUser
 import com.hashcode.serverapp.services.UserListService
 import com.sun.net.httpserver.HttpHandler
+import org.json.JSONArray
 import org.json.JSONObject
 
 class UserListHandler(private var context: Context) : HttpRequestHandler {
@@ -21,7 +22,8 @@ class UserListHandler(private var context: Context) : HttpRequestHandler {
                         val userId = (jsonBody["userId"] as Int).toLong()
 
                         val users: List<ExtendedUser> = userListService.getUsers(userId)
-                        val usersJson: List<JSONObject> = users.map { user -> userListService.extendedUserToJson(user) }
+                        val usersJson = JSONArray()
+                        users.forEach { user -> usersJson.put(userListService.extendedUserToJson(user)) }
 
                         val response = JSONObject()
                         response.put("success", true)
