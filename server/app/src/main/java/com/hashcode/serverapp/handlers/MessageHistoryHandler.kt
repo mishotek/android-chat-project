@@ -13,7 +13,7 @@ class MessageHistoryHandler(private var context: Context) : HttpRequestHandler {
             run {
                 // Get request method
                 when (exchange!!.requestMethod) {
-                    "GET" -> {
+                    "POST" -> {
                         val messageHistoryService = MessageHistoryService(context)
                         val inputStream = exchange.requestBody
                         val requestBody = streamToString(inputStream)
