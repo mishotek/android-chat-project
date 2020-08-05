@@ -8,8 +8,8 @@ import com.example.client.R
 import com.example.client.entities.Message
 
 class ChatActivity: AppCompatActivity(), ChatSceneContract.View {
-    override var senderId: Long = 1
-    override var recipientId: Long = 2
+    override var senderId: Long = -1
+    override var recipientId: Long = -1
     lateinit var presenter: ChatSceneContract.Presenter
 
     private var adapter: ChatRecyclerViewAdapter? = null
@@ -19,13 +19,17 @@ class ChatActivity: AppCompatActivity(), ChatSceneContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
+        senderId = intent.getLongExtra("userId", -1)
+        recipientId = intent.getLongExtra("recipientId", -1)
+
         presenter = ChatScenePresenterImpl(this)
-        presenter.getMessages()
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = ChatRecyclerViewAdapter()
         recyclerView.adapter = adapter
+
+        presenter.getMessages()
     }
 
     override fun showMessages(messages: List<Message>) {
