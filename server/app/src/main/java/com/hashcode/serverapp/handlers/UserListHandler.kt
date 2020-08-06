@@ -4,8 +4,11 @@ import android.content.Context
 import com.hashcode.serverapp.models.ExtendedUser
 import com.hashcode.serverapp.services.UserListService
 import com.sun.net.httpserver.HttpHandler
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.Error
 
 class UserListHandler(private var context: Context) : HttpRequestHandler {
     override fun getHandler(): HttpHandler {
@@ -20,8 +23,23 @@ class UserListHandler(private var context: Context) : HttpRequestHandler {
                         val jsonBody = JSONObject(requestBody)
 
                         val userId = (jsonBody["userId"] as Int).toLong()
+                        var query = ""
+                        var skip = -1
+                        var limit = -1
 
-                        val users: List<ExtendedUser> = userListService.getUsers(userId)
+                        if (jsonBody.has("query")) {
+                            query = jsonBody["query"] as String
+                        }
+
+                        if (jsonBody.has("skip")) {
+                            skip = jsonBody["skip"] as Int
+                        }
+
+                        if (jsonBody.has("limit")) {
+                            limit = jsonBody["limit"] as Int
+                        }
+
+                        val users: List<ExtendedUser> = userListService.getUsers(userId, query, skip, limit)
                         val usersJson = JSONArray()
                         users.forEach { user -> usersJson.put(userListService.extendedUserToJson(user)) }
 

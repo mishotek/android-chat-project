@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.hashcode.serverapp.database.DatabaseManager
 import com.hashcode.serverapp.database.entities.Message
+import com.hashcode.serverapp.database.entities.User
 import com.hashcode.serverapp.models.ExtendedUser
 import org.json.JSONObject
 
@@ -11,12 +12,15 @@ class UserListService(private val context: Context) {
 
     private val database = DatabaseManager.getDatabase(context).getDao()
 
-    fun getUsers(userId: Long): List<ExtendedUser> {
+    fun getUsers(userId: Long, query: String, skip: Int, limit: Int): List<ExtendedUser> {
         val blockedUserIds: List<Long> = database.getBlockedUsers(userId).map { blockedUser -> blockedUser.blockedId }
 
-        return database.getAllUsersBut(userId)
+        val users = filterByQuery(database.getAllUsersBut(userId), query)
+        val validUsers = users
             .map { user -> ExtendedUser(user = user, lastMessage = getLastMessage(userId, user.id)) }
             .filter { user -> !blockedUserIds.any { blockedId -> blockedId == user.user.id } }
+
+        return sublist(validUsers, skip, limit)
     }
 
     fun extendedUserToJson(extendedUser: ExtendedUser): JSONObject {
@@ -60,5 +64,37 @@ class UserListService(private val context: Context) {
         }
 
         return latest
+    }
+
+    private fun filterByQuery(users: List<User>, query: String): List<User> {
+        if (query.isEmpty()) {
+            return users
+        }
+
+        return users.filter { user -> user.nickname.indexOf(query) != -1 }
+    }
+
+    private fun sublist(users: List<ExtendedUser>, skip: Int, limit: Int): List<ExtendedUser> {
+        if (skip == -1 && limit == -1) {
+            return users
+        }
+
+        if (skip >= users.size || limit <= skip) {
+            return ArrayList()
+        }
+
+        var _skip = skip
+
+        if (skip == -1) {
+            _skip = 0
+        }
+
+        var _end = _skip + limit
+
+        if (_end > users.size) {
+            _end = users.size
+        }
+
+        return users.subList(_skip, _end)
     }
 }
