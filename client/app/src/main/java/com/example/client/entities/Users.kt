@@ -18,5 +18,7 @@ data class ActiveUsers(
 )
 
 data class ActiveUsersRequest(
-    val userId: Long
+    val userId: Long,
+    val skip: Int,
+    val limit: Int
 )

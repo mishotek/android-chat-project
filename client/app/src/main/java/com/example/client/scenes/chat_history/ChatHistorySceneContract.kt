@@ -17,6 +17,9 @@ interface ChatHistorySceneContract {
         fun onCreate()
         fun onPause()
         fun onResume()
+
+        var isLoading: Boolean
+        fun fetchMoreChatHistory()
     }
 
 }

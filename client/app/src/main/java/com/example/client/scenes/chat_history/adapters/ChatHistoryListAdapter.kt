@@ -1,5 +1,6 @@
 package com.example.client.scenes.chat_history.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.example.client.R

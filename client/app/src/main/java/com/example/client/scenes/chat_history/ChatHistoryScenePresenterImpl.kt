@@ -24,6 +24,22 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
         ApiInterface.initGateway()
     }
 
+    private var currentSkip = 0
+    private val limit = 10
+
+    override var isLoading: Boolean = false
+
+    override fun fetchMoreChatHistory() {
+        currentSkip += limit
+        fetchChatHistory(currentUserId) { items ->
+            val sizeBefore = adapter?.chatItems?.size
+            adapter?.chatItems?.addAll(items)
+            val sizeAfter = adapter?.chatItems?.size
+            adapter?.notifyItemRangeChanged(sizeBefore!!, sizeAfter!!)
+            isLoading = false
+        }
+    }
+
     lateinit var mainHandler: Handler
 
     private var currentUserId: Long = -1
@@ -45,15 +61,15 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
     }
 
     override fun onPause() {
-        mainHandler.removeCallbacks(fetchActiveUsersTask)
+        //mainHandler.removeCallbacks(fetchActiveUsersTask)
     }
 
     override fun onResume() {
-        mainHandler.post(fetchActiveUsersTask)
+        // mainHandler.post(fetchActiveUsersTask)
     }
 
     private fun fetchChatHistory(userId: Long, completion: (List<ChatItemModel>) -> Unit) {
-        val call = gateway.getAllActiveUsers(ActiveUsersRequest(userId))
+        val call = gateway.getAllActiveUsers(ActiveUsersRequest(userId, currentSkip, limit))
         call.enqueue(object: Callback<ActiveUsers> {
 
             override fun onFailure(call: Call<ActiveUsers>, t: Throwable) {

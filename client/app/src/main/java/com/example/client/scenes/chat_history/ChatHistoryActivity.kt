@@ -14,9 +14,11 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import com.example.client.R
 import com.example.client.scenes.chat.ChatActivity
 import com.example.client.scenes.chat_history.adapters.ChatHistoryListAdapter
+import com.example.client.scenes.chat_history.pagination.PaginationScrollListener
 import com.example.client.scenes.chat_history.swipe_callback.SwipeToDeleteCallback
 
 class ChatHistoryActivity: AppCompatActivity(), ChatHistorySceneContract.View {
@@ -33,9 +35,19 @@ class ChatHistoryActivity: AppCompatActivity(), ChatHistorySceneContract.View {
 
         noHistoryLabel = findViewById(R.id.noHistoryLabel)
         chatHistoryList = findViewById(R.id.chatHistoryList)
-        chatHistoryList?.layoutManager = LinearLayoutManager(this)
+        val layoutManager = LinearLayoutManager(this)
+        chatHistoryList?.layoutManager = layoutManager
 
+        chatHistoryList?.addOnScrollListener(object : PaginationScrollListener(layoutManager) {
+            override fun isLoading(): Boolean {
+                return presenter.isLoading
+            }
 
+            override fun loadMoreItems() {
+                presenter.isLoading = true
+                presenter.fetchMoreChatHistory()
+            }
+        })
 
         val currentUserId = intent.getLongExtra("userId", -1)
 
