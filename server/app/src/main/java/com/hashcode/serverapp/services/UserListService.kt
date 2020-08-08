@@ -8,11 +8,16 @@ import com.hashcode.serverapp.database.entities.User
 import com.hashcode.serverapp.models.ExtendedUser
 import org.json.JSONObject
 
+data class UserList(
+    val users: List<ExtendedUser>,
+    val count: Int
+)
+
 class UserListService(private val context: Context) {
 
     private val database = DatabaseManager.getDatabase(context).getDao()
 
-    fun getUsers(userId: Long, query: String, skip: Int, limit: Int): List<ExtendedUser> {
+    fun getUsers(userId: Long, query: String, skip: Int, limit: Int): UserList {
         val blockedUserIds: List<Long> = database.getBlockedUsers(userId).map { blockedUser -> blockedUser.blockedId }
 
         val users = filterByQuery(database.getAllUsersBut(userId), query)
@@ -20,7 +25,7 @@ class UserListService(private val context: Context) {
             .map { user -> ExtendedUser(user = user, lastMessage = getLastMessage(userId, user.id)) }
             .filter { user -> !blockedUserIds.any { blockedId -> blockedId == user.user.id } }
 
-        return sublist(validUsers, skip, limit)
+        return UserList(sublist(validUsers, skip, limit), validUsers.size)
     }
 
     fun extendedUserToJson(extendedUser: ExtendedUser): JSONObject {
