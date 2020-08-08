@@ -32,8 +32,6 @@ class ChatRecyclerViewAdapter: RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         messages.addAll(newMessages)
         userId = newUserId
 
-        Log.i("myLog", "set data " + messages.toString())
-
         notifyDataSetChanged()
     }
 }

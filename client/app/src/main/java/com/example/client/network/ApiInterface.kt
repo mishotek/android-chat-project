@@ -22,6 +22,9 @@ interface ApiInterface {
     @POST("messages")
     fun getMessages(@Body messageInfo: MessagesRequest): Call<MessagesResponse>
 
+    @POST("send-message")
+    fun sendMessage(@Body message: SendMessageRequest): Call<SendMessageResponse>
+
     companion object {
         fun initGateway() : ApiInterface {
             val retrofit = Retrofit.Builder()

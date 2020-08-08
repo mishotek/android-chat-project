@@ -24,13 +24,17 @@ class MessageHandler(private var context: Context) : HttpRequestHandler {
 
                         val messageId = messagingService.saveMessage(senderId, recipientId, message, time)
 
+                        val messageJson = JSONObject()
+                        messageJson.put("senderId", senderId)
+                        messageJson.put("recipientId", recipientId)
+                        messageJson.put("message", message)
+                        messageJson.put("time", time)
+                        messageJson.put("messageId", messageId)
+
                         val response = JSONObject()
                         response.put("success", true)
-                        response.put("senderId", senderId)
-                        response.put("recipientId", recipientId)
-                        response.put("message", message)
-                        response.put("time", time)
-                        response.put("messageId", messageId)
+                        response.put("message", messageJson)
+
 
                         sendResponse(exchange, response.toString())
                     }

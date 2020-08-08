@@ -9,21 +9,14 @@ import retrofit2.Response
 
 class ChatScenePresenterImpl(val view: ChatSceneContract.View): ChatSceneContract.Presenter {
 
-    private val messages: ArrayList<Message> = ArrayList()
     private val gateway by lazy {
         ApiInterface.initGateway()
     }
 
-    init {
-        messages.add(Message(id = 1, senderId = 1, recipientId = 2, message = "Privet", time = 1596642725319))
-        messages.add(Message(id = 2, senderId = 2, recipientId = 1, message = "Zdarova", time = 1596642725319))
-        messages.add(Message(id = 3, senderId = 1, recipientId = 2, message = "Kak jizn maladaia?", time = 1596642725319))
-    }
-
     override fun sendMessage(message: String) {
-        messages.add(Message(id = 10, senderId = view.senderId, recipientId = view.recipientId, message = message, time = 10))
+        sendMessageRequest(view.senderId, view.recipientId, message) { messageObj ->
 
-        view.showMessages(messages)
+        }
     }
 
     override fun getMessages() {
@@ -44,6 +37,26 @@ class ChatScenePresenterImpl(val view: ChatSceneContract.View): ChatSceneContrac
                 val shouldProceed = response.code() == 200 && messages != null && messages.success
                 if (shouldProceed) {
                     completion(messages?.messages ?: ArrayList())
+                } else {
+                    Log.d("dbg", "Couldn't fetch active users")
+                }
+            }
+        })
+    }
+
+    private fun sendMessageRequest(senderId: Long, recipientId: Long, message: String, completion: (Message?) -> Unit) {
+        val call = gateway.sendMessage(SendMessageRequest(senderId, recipientId, message))
+        call.enqueue(object: Callback<SendMessageResponse> {
+
+            override fun onFailure(call: Call<SendMessageResponse>, t: Throwable) {
+                Log.d("dbg", "FAILURE: couldn't fetch messages")
+            }
+
+            override fun onResponse(call: Call<SendMessageResponse>, response: Response<SendMessageResponse>) {
+                val message = response.body()
+                val shouldProceed = response.code() == 200 && message != null && message.success
+                if (shouldProceed) {
+                    completion(message?.message)
                 } else {
                     Log.d("dbg", "Couldn't fetch active users")
                 }
