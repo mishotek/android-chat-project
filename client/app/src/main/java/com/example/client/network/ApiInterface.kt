@@ -25,6 +25,9 @@ interface ApiInterface {
     @POST("send-message")
     fun sendMessage(@Body message: SendMessageRequest): Call<SendMessageResponse>
 
+    @POST("block-user")
+    fun blockUser(@Body blockUserParams: BlockUserRequest): Call<BlockUserResponse>
+
     companion object {
         fun initGateway() : ApiInterface {
             val retrofit = Retrofit.Builder()

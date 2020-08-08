@@ -40,8 +40,8 @@ class SwipeToDeleteCallback(val delegate: SwipeToDeleteCallbackDelegate?, val co
         isCurrentlyActive: Boolean
     ) {
         RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-            .addSwipeRightBackgroundColor(ContextCompat.getColor(context, R.color.red))
-            .addSwipeRightActionIcon(R.drawable.ic_delete_black_24dp)
+            .addSwipeRightBackgroundColor(ContextCompat.getColor(context, R.color.white))
+            .addSwipeRightActionIcon(R.drawable.ic_clear_black_24dp)
             .create()
             .decorate()
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)

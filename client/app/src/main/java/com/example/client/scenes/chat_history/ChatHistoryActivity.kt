@@ -43,7 +43,7 @@ class ChatHistoryActivity: AppCompatActivity(), ChatHistorySceneContract.View {
         presenter.onCreate()
         presenter.getChatHistoryDataSource(currentUserId) { items ->
             val adapter = ChatHistoryListAdapter()
-            adapter.chatItems = items
+            adapter.chatItems = items.toMutableList()
             chatHistoryList?.adapter = adapter
             presenter.setAdapter(adapter)
         }

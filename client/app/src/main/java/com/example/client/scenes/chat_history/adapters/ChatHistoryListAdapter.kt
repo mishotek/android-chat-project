@@ -8,7 +8,7 @@ import com.example.client.scenes.chat_history.view_holders.ChatHistoryListItemVi
 
 class ChatHistoryListAdapter: androidx.recyclerview.widget.RecyclerView.Adapter<ChatHistoryListItemViewHolder>() {
 
-    var chatItems: List<ChatItemModel> = ArrayList<ChatItemModel>()
+    var chatItems: MutableList<ChatItemModel> = ArrayList<ChatItemModel>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatHistoryListItemViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.cell_chat_history_item, parent, false)

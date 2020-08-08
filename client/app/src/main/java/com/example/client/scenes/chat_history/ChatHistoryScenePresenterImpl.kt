@@ -5,6 +5,8 @@ import android.os.Looper
 import android.util.Log
 import com.example.client.entities.ActiveUsers
 import com.example.client.entities.ActiveUsersRequest
+import com.example.client.entities.BlockUserRequest
+import com.example.client.entities.BlockUserResponse
 import com.example.client.network.ApiInterface
 import com.example.client.scenes.chat_history.adapters.ChatHistoryListAdapter
 import com.example.client.scenes.chat_history.models.ChatItemModel
@@ -83,7 +85,7 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
         override fun run() {
             Log.d("dbg", "Active users fetched")
             fetchChatHistory(currentUserId) { items ->
-                adapter?.chatItems = items
+                adapter?.chatItems = items.toMutableList()
                 adapter?.notifyDataSetChanged()
             }
             mainHandler.postDelayed(this, 5000)
@@ -91,7 +93,25 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
     }
 
     override fun didSwipeCellAt(position: Int) {
-        Log.d("dbg", "swiped at $position")
+        val model = adapter?.chatItems?.get(position) ?: return
+        val call = gateway.blockUser(BlockUserRequest(currentUserId, model.userId))
+        call.enqueue(object: Callback<BlockUserResponse> {
+
+            override fun onFailure(call: Call<BlockUserResponse>, t: Throwable) {
+                view.showToastMessage("Network failure: User couldn't be blocked")
+            }
+
+            override fun onResponse(call: Call<BlockUserResponse>, response: Response<BlockUserResponse>) {
+                val blockUserResponse = response.body()
+                val shouldProceed = response.code() == 200 && blockUserResponse != null && blockUserResponse.success
+                if (shouldProceed) {
+                    adapter?.chatItems?.removeAt(position)
+                    adapter?.notifyItemRemoved(position)
+                } else {
+                    view.showToastMessage("User couldn't be blocked")
+                }
+            }
+        })
     }
 
 }
