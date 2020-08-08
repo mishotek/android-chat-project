@@ -28,6 +28,8 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
     private val limit = 10
     private var totalItemsFetched = 0
 
+    private var queryToSearch = ""
+
     override var isLoading: Boolean = false
 
     override fun fetchMoreChatHistory() {
@@ -41,6 +43,11 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
             isLoading = false
             Log.d("dbg", "Lazy loaded $limit more items - currentSkip: $currentSkip")
         }
+    }
+
+    override fun onSearch(query: String) {
+        Log.d("dbg", "Query: $query")
+        queryToSearch = if (query.length >= 3) query else ""
     }
 
     lateinit var mainHandler: Handler
@@ -74,7 +81,7 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
     }
 
     private fun fetchChatHistory(userId: Long, skip: Int, limit: Int, completion: (List<ChatItemModel>) -> Unit) {
-        val call = gateway.getAllActiveUsers(ActiveUsersRequest(userId, skip, limit))
+        val call = gateway.getAllActiveUsers(ActiveUsersRequest(userId, skip, limit, queryToSearch))
         call.enqueue(object: Callback<ActiveUsers> {
 
             override fun onFailure(call: Call<ActiveUsers>, t: Throwable) {
@@ -112,7 +119,7 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
                 adapter?.chatItems = items.toMutableList()
                 adapter?.notifyDataSetChanged()
             }
-            mainHandler.postDelayed(this, 5000)
+            mainHandler.postDelayed(this, 3000)
         }
     }
 

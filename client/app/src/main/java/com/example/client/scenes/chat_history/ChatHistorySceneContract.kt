@@ -20,6 +20,8 @@ interface ChatHistorySceneContract {
 
         var isLoading: Boolean
         fun fetchMoreChatHistory()
+
+        fun onSearch(query: String)
     }
 
 }

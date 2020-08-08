@@ -6,11 +6,15 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +30,7 @@ class ChatHistoryActivity: AppCompatActivity(), ChatHistorySceneContract.View {
 
     private var chatHistoryList: RecyclerView? = null
     private var noHistoryLabel: TextView? = null
+    private var searchField: EditText? = null
 
     lateinit var presenter: ChatHistorySceneContract.Presenter
 
@@ -33,6 +38,7 @@ class ChatHistoryActivity: AppCompatActivity(), ChatHistorySceneContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_history)
 
+        searchField = findViewById(R.id.searchField)
         noHistoryLabel = findViewById(R.id.noHistoryLabel)
         chatHistoryList = findViewById(R.id.chatHistoryList)
         val layoutManager = LinearLayoutManager(this)
@@ -61,6 +67,15 @@ class ChatHistoryActivity: AppCompatActivity(), ChatHistorySceneContract.View {
                 presenter.isLoading = true
                 presenter.fetchMoreChatHistory()
             }
+        })
+
+        searchField?.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(arg0: Editable) {
+                presenter.onSearch(arg0.toString())
+            }
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
         })
     }
 

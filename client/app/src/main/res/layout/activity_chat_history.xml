@@ -36,13 +36,14 @@
                 android:layout_marginLeft="32dp"/>
 
             <EditText
+                android:id="@+id/searchField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Search"
-                android:textColorHint="#585454"
-                android:textColor="#585454"
                 android:layout_marginTop="180dp"
-                android:padding="16dp"/>
+                android:hint="Search"
+                android:padding="16dp"
+                android:textColor="#585454"
+                android:textColorHint="#585454" />
 
             <androidx.appcompat.widget.Toolbar
                 android:layout_width="match_parent"
