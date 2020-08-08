@@ -1,16 +1,23 @@
 package com.example.client.scenes.chat_history
 
 import android.content.Intent
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.client.R
 import com.example.client.scenes.chat.ChatActivity
 import com.example.client.scenes.chat_history.adapters.ChatHistoryListAdapter
+import com.example.client.scenes.chat_history.swipe_callback.SwipeToDeleteCallback
 
 class ChatHistoryActivity: AppCompatActivity(), ChatHistorySceneContract.View {
 
@@ -28,6 +35,8 @@ class ChatHistoryActivity: AppCompatActivity(), ChatHistorySceneContract.View {
         chatHistoryList = findViewById(R.id.chatHistoryList)
         chatHistoryList?.layoutManager = LinearLayoutManager(this)
 
+
+
         val currentUserId = intent.getLongExtra("userId", -1)
 
         presenter = ChatHistoryScenePresenterImpl(this)
@@ -38,6 +47,9 @@ class ChatHistoryActivity: AppCompatActivity(), ChatHistorySceneContract.View {
             chatHistoryList?.adapter = adapter
             presenter.setAdapter(adapter)
         }
+
+        val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(presenter as ChatHistoryScenePresenterImpl,this))
+        itemTouchHelper.attachToRecyclerView(chatHistoryList)
     }
 
     override fun onPause() {
@@ -64,5 +76,4 @@ class ChatHistoryActivity: AppCompatActivity(), ChatHistorySceneContract.View {
         intent.putExtra("recipientId", recipientId)
         startActivity(intent)
     }
-
 }

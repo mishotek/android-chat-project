@@ -8,12 +8,14 @@ import com.example.client.entities.ActiveUsersRequest
 import com.example.client.network.ApiInterface
 import com.example.client.scenes.chat_history.adapters.ChatHistoryListAdapter
 import com.example.client.scenes.chat_history.models.ChatItemModel
+import com.example.client.scenes.chat_history.swipe_callback.SwipeToDeleteCallbackDelegate
 import com.example.client.scenes.chat_history.view_holders.ChatHistoryListItemViewHolderDelegate
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): ChatHistorySceneContract.Presenter, ChatHistoryListItemViewHolderDelegate {
+class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): ChatHistorySceneContract.Presenter, ChatHistoryListItemViewHolderDelegate,
+    SwipeToDeleteCallbackDelegate {
 
 
     private val gateway by lazy {
@@ -86,6 +88,10 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
             }
             mainHandler.postDelayed(this, 5000)
         }
+    }
+
+    override fun didSwipeCellAt(position: Int) {
+        Log.d("dbg", "swiped at $position")
     }
 
 }
