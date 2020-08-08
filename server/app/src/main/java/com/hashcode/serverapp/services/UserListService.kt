@@ -79,7 +79,7 @@ class UserListService(private val context: Context) {
             return users
         }
 
-        if (skip >= users.size || limit <= skip) {
+        if (skip >= users.size) {
             return ArrayList()
         }
 
