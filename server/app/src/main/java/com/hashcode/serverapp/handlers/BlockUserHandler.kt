@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.hashcode.serverapp.models.ExtendedUser
 import com.hashcode.serverapp.services.BlockUserService
+import com.hashcode.serverapp.services.UserList
 import com.hashcode.serverapp.services.UserListService
 import com.sun.net.httpserver.HttpHandler
 import kotlinx.coroutines.GlobalScope
@@ -46,12 +47,13 @@ class BlockUserHandler(private var context: Context) : HttpRequestHandler {
                             blockUserService.block(userId, idToBlock)
 
                             // New list of users
-                            val users: List<ExtendedUser> = userListService.getUsers(userId, query, skip, limit)
-                            val usersJson: List<JSONObject> = users.map { user -> userListService.extendedUserToJson(user) }
+                            val userList: UserList = userListService.getUsers(userId, query, skip, limit)
+                            val usersJson: List<JSONObject> = userList.users.map { user -> userListService.extendedUserToJson(user) }
 
                             val response = JSONObject()
                             response.put("success", true)
                             response.put("users", usersJson)
+                            response.put("count", userList.count)
                             sendResponse(exchange, response.toString())
                         }
                     }

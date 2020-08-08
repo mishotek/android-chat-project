@@ -2,6 +2,7 @@ package com.hashcode.serverapp.handlers
 
 import android.content.Context
 import com.hashcode.serverapp.models.ExtendedUser
+import com.hashcode.serverapp.services.UserList
 import com.hashcode.serverapp.services.UserListService
 import com.sun.net.httpserver.HttpHandler
 import kotlinx.coroutines.GlobalScope
@@ -39,13 +40,14 @@ class UserListHandler(private var context: Context) : HttpRequestHandler {
                             limit = jsonBody["limit"] as Int
                         }
 
-                        val users: List<ExtendedUser> = userListService.getUsers(userId, query, skip, limit)
+                        val userList: UserList = userListService.getUsers(userId, query, skip, limit)
                         val usersJson = JSONArray()
-                        users.forEach { user -> usersJson.put(userListService.extendedUserToJson(user)) }
+                        userList.users.forEach { user -> usersJson.put(userListService.extendedUserToJson(user)) }
 
                         val response = JSONObject()
                         response.put("success", true)
                         response.put("users", usersJson)
+                        response.put("count", userList.count)
                         sendResponse(exchange, response.toString())
                     }
                 }
