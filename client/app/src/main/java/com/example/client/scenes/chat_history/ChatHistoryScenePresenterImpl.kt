@@ -26,17 +26,20 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
 
     private var currentSkip = 0
     private val limit = 10
+    private var totalItemsFetched = 0
 
     override var isLoading: Boolean = false
 
     override fun fetchMoreChatHistory() {
         currentSkip += limit
-        fetchChatHistory(currentUserId) { items ->
+        fetchChatHistory(currentUserId, currentSkip, limit) { items ->
+            totalItemsFetched += items.count()
             val sizeBefore = adapter?.chatItems?.size
             adapter?.chatItems?.addAll(items)
             val sizeAfter = adapter?.chatItems?.size
             adapter?.notifyItemRangeChanged(sizeBefore!!, sizeAfter!!)
             isLoading = false
+            Log.d("dbg", "Lazy loaded $limit more items - currentSkip: $currentSkip")
         }
     }
 
@@ -47,7 +50,9 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
 
     override fun getChatHistoryDataSource(userId: Long, completion: (List<ChatItemModel>) -> Unit) {
         currentUserId = userId
-        fetchChatHistory(userId) { items ->
+        fetchChatHistory(userId, currentSkip, limit) { items ->
+            totalItemsFetched += items.count()
+            view.setNoHistoryLabelVisible(items.isEmpty())
             completion(items)
         }
     }
@@ -61,15 +66,15 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
     }
 
     override fun onPause() {
-        //mainHandler.removeCallbacks(fetchActiveUsersTask)
+        mainHandler.removeCallbacks(fetchActiveUsersTask)
     }
 
     override fun onResume() {
-        // mainHandler.post(fetchActiveUsersTask)
+        mainHandler.post(fetchActiveUsersTask)
     }
 
-    private fun fetchChatHistory(userId: Long, completion: (List<ChatItemModel>) -> Unit) {
-        val call = gateway.getAllActiveUsers(ActiveUsersRequest(userId, currentSkip, limit))
+    private fun fetchChatHistory(userId: Long, skip: Int, limit: Int, completion: (List<ChatItemModel>) -> Unit) {
+        val call = gateway.getAllActiveUsers(ActiveUsersRequest(userId, skip, limit))
         call.enqueue(object: Callback<ActiveUsers> {
 
             override fun onFailure(call: Call<ActiveUsers>, t: Throwable) {
@@ -80,11 +85,10 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
                 val activeUsers = response.body()
                 val shouldProceed = response.code() == 200 && activeUsers != null && activeUsers.success
                 if (shouldProceed) {
-                    view.setNoHistoryLabelVisible(activeUsers!!.users.isEmpty())
-
                     val items = activeUsers!!.users.map { it ->
                         ChatItemModel(it.user.id.toLong(), it.user.nickname, it.lastMessage?.message ?: "", this@ChatHistoryScenePresenterImpl)
                     }
+
                     completion(items)
                 } else {
                     view.showToastMessage("Active users couldn't be loaded")
@@ -99,8 +103,12 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
 
     private val fetchActiveUsersTask = object : Runnable {
         override fun run() {
-            Log.d("dbg", "Active users fetched")
-            fetchChatHistory(currentUserId) { items ->
+            if (totalItemsFetched == 0) {
+                mainHandler.postDelayed(this, 5000)
+                return
+            }
+            Log.d("dbg", "Active users fetched - range: 0-$totalItemsFetched")
+            fetchChatHistory(currentUserId, 0, totalItemsFetched) { items ->
                 adapter?.chatItems = items.toMutableList()
                 adapter?.notifyDataSetChanged()
             }

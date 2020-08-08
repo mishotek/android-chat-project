@@ -38,17 +38,6 @@ class ChatHistoryActivity: AppCompatActivity(), ChatHistorySceneContract.View {
         val layoutManager = LinearLayoutManager(this)
         chatHistoryList?.layoutManager = layoutManager
 
-        chatHistoryList?.addOnScrollListener(object : PaginationScrollListener(layoutManager) {
-            override fun isLoading(): Boolean {
-                return presenter.isLoading
-            }
-
-            override fun loadMoreItems() {
-                presenter.isLoading = true
-                presenter.fetchMoreChatHistory()
-            }
-        })
-
         val currentUserId = intent.getLongExtra("userId", -1)
 
         presenter = ChatHistoryScenePresenterImpl(this)
@@ -62,6 +51,17 @@ class ChatHistoryActivity: AppCompatActivity(), ChatHistorySceneContract.View {
 
         val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(presenter as ChatHistoryScenePresenterImpl,this))
         itemTouchHelper.attachToRecyclerView(chatHistoryList)
+
+        chatHistoryList?.addOnScrollListener(object : PaginationScrollListener(layoutManager) {
+            override fun isLoading(): Boolean {
+                return presenter.isLoading
+            }
+
+            override fun loadMoreItems() {
+                presenter.isLoading = true
+                presenter.fetchMoreChatHistory()
+            }
+        })
     }
 
     override fun onPause() {
