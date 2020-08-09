@@ -1,17 +1,22 @@
 package com.example.client.scenes.chat
 
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
+import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.client.R
 import com.example.client.entities.Message
+import android.util.Base64
 import java.util.*
+
 
 class ChatActivity: AppCompatActivity(), ChatSceneContract.View {
     override var senderId: Long = -1
@@ -29,6 +34,7 @@ class ChatActivity: AppCompatActivity(), ChatSceneContract.View {
         setContentView(R.layout.activity_chat)
 
         setUpList()
+        setUpHeader()
         listenToTyping()
         listenToSend()
         updateMessages()
@@ -41,6 +47,24 @@ class ChatActivity: AppCompatActivity(), ChatSceneContract.View {
 
     override fun showMessages(messages: List<Message>) {
         adapter?.setData(messages, senderId)
+    }
+
+    private fun setUpHeader() {
+        val nickname = intent.getStringExtra("nickname")
+        val occupation = intent.getStringExtra("occupation")
+        val imgBase64 = intent.getStringExtra("imgBase64")
+
+        findViewById<TextView>(R.id.headerName).text = nickname
+        findViewById<TextView>(R.id.headerOccupation).text = occupation
+        findViewById<LinearLayout>(R.id.backButton).setOnClickListener { event -> finish() }
+
+        if (imgBase64 != null && imgBase64.isNotEmpty()) {
+            val imageAsBytes: ByteArray = Base64.decode(imgBase64.toByteArray(), Base64.DEFAULT)
+
+            val image: ImageView = findViewById<View>(R.id.headerAvatar) as ImageView
+
+            image.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.size))
+        }
     }
 
     private fun setUpList() {

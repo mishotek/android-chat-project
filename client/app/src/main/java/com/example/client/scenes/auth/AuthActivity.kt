@@ -71,6 +71,7 @@ class AuthActivity: AppCompatActivity(), AuthSceneContract.View {
                 }
                 val yourSelectedImage = BitmapFactory.decodeStream(imageStream)
                 chosenAvatarImageBase64 = encodeToBase64(yourSelectedImage) ?: ""
+                Log.i("result", chosenAvatarImageBase64)
             }
         }
     }
