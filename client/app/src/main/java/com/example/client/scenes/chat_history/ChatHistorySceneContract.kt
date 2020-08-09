@@ -6,7 +6,7 @@ import com.example.client.scenes.chat_history.models.ChatItemModel
 interface ChatHistorySceneContract {
 
     interface View {
-        fun startChatActivity(userId: Long, recipientId: Long)
+        fun startChatActivity(userId: Long, chatItemModel: ChatItemModel?)
         fun showToastMessage(message: String)
         fun setNoHistoryLabelVisible(value: Boolean)
     }

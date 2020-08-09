@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import com.example.client.R
 import com.example.client.scenes.chat.ChatActivity
 import com.example.client.scenes.chat_history.adapters.ChatHistoryListAdapter
+import com.example.client.scenes.chat_history.models.ChatItemModel
 import com.example.client.scenes.chat_history.pagination.PaginationScrollListener
 import com.example.client.scenes.chat_history.swipe_callback.SwipeToDeleteCallback
 
@@ -97,10 +98,13 @@ class ChatHistoryActivity: AppCompatActivity(), ChatHistorySceneContract.View {
         noHistoryLabel?.visibility = if (value) View.VISIBLE else View.GONE
     }
 
-    override fun startChatActivity(userId: Long, recipientId: Long) {
+    override fun startChatActivity(userId: Long, chatItemModel: ChatItemModel?) {
+        if (chatItemModel == null) return
         val intent = Intent(this, ChatActivity::class.java)
         intent.putExtra("userId", userId)
-        intent.putExtra("recipientId", recipientId)
+        intent.putExtra("recipientId", chatItemModel.userId)
+        intent.putExtra("nickname", chatItemModel.nickname)
+        intent.putExtra("occupation", chatItemModel.occupation)
         startActivity(intent)
     }
 }
