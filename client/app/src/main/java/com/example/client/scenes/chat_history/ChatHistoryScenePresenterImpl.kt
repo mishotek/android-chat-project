@@ -93,7 +93,14 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
                 val shouldProceed = response.code() == 200 && activeUsers != null && activeUsers.success
                 if (shouldProceed) {
                     val items = activeUsers!!.users.map { it ->
-                        ChatItemModel(it.user.id.toLong(), it.user.nickname, it.lastMessage?.message ?: "", this@ChatHistoryScenePresenterImpl)
+                        ChatItemModel(
+                            it.user.id.toLong(),
+                            it.user.nickname,
+                            it.lastMessage?.message ?: "",
+                            it.user.occupation,
+                            it.user.imgBase64,
+                            this@ChatHistoryScenePresenterImpl
+                        )
                     }
 
                     completion(items)
@@ -104,8 +111,8 @@ class ChatHistoryScenePresenterImpl(val view: ChatHistorySceneContract.View): Ch
         })
     }
 
-    override fun didTapChatItem(recipientId: Long) {
-        view.startChatActivity(currentUserId, recipientId)
+    override fun didTapChatItem(model: ChatItemModel?) {
+        view.startChatActivity(currentUserId, model)
     }
 
     private val fetchActiveUsersTask = object : Runnable {
