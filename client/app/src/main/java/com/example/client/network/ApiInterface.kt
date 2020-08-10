@@ -29,9 +29,13 @@ interface ApiInterface {
     fun blockUser(@Body blockUserParams: BlockUserRequest): Call<BlockUserResponse>
 
     companion object {
+
+        const val baseUrl = "http://localhost:5000/"
+//        const val baseUrl = "http://10.0.2.2:5000/"
+
         fun initGateway() : ApiInterface {
             val retrofit = Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:5000/")
+                .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
 
